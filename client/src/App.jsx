@@ -1,6 +1,6 @@
 import { useState, useEffect, createContext, useContext } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { isAuthenticated, getCurrentUser, getToken } from './utils/auth';
+import { isAuthenticated, getCurrentUser, getToken, getUser } from './utils/auth'; // Import getUser
 import Navbar from './components/Navbar';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -8,15 +8,17 @@ import Sessions from './pages/Sessions';
 import MySessions from './pages/MySessions';
 import CreateSession from './pages/CreateSession';
 
-// Create auth context
 export const AuthContext = createContext();
 
 export const useAuth = () => useContext(AuthContext);
 
-// Protected route component
 const ProtectedRoute = ({ children }) => {
-  const { isAuth } = useAuth();
+  const { isAuth, isLoading } = useAuth();
   const location = useLocation();
+
+  if (isLoading) {
+    return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
+  }
 
   if (!isAuth) {
     return <Navigate to="/login" state={{ from: location }} replace />;
@@ -32,19 +34,24 @@ function App() {
 
   useEffect(() => {
     const checkAuth = () => {
-      const token = getToken();
-      const auth = isAuthenticated();
-      const currentUser = getCurrentUser();
-      setIsAuth(auth);
-      setUser(currentUser);
-      setIsLoading(false);
+      try {
+        const auth = isAuthenticated();
+        const currentUser = getUser();
+        setIsAuth(auth);
+        setUser(currentUser);
+      } catch (error) {
+        console.error('Auth check error:', error);
+        setIsAuth(false);
+        setUser(null);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     checkAuth();
     
-    // Listen for storage events to sync auth state across tabs
     const handleStorageChange = (e) => {
-      if (e.key === 'token' || e.key === 'user') {
+      if (e.key === 'arvyax_token' || e.key === 'arvyax_user') {
         checkAuth();
       }
     };
@@ -54,34 +61,41 @@ function App() {
   }, []);
 
   const login = (token, userData) => {
-    localStorage.setItem('token', token);
+    localStorage.setItem('arvyax_token', token);
     if (userData) {
-      localStorage.setItem('user', JSON.stringify(userData));
+      localStorage.setItem('arvyax_user', JSON.stringify(userData));
       setUser(userData);
     }
     setIsAuth(true);
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    localStorage.removeItem('arvyax_token');
+    localStorage.removeItem('arvyax_user');
     setIsAuth(false);
     setUser(null);
   };
 
+  // Show loading state until auth check is complete
   if (isLoading) {
-    return <div>Loading...</div>; 
+    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading...</div>;
   }
 
   return (
-    <AuthContext.Provider value={{ isAuth, user, login, logout }}>
+    <AuthContext.Provider value={{ isAuth, user, login, logout, isLoading }}>
       <div className="min-h-screen bg-gray-50">
         <Navbar />
         <main className="py-10">
           <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <Routes>
-              <Route path="/login" element={!isAuth ? <Login /> : <Navigate to="/my-sessions" replace />} />
-              <Route path="/register" element={!isAuth ? <Register /> : <Navigate to="/my-sessions" replace />} />
+              <Route 
+                path="/login" 
+                element={!isAuth ? <Login /> : <Navigate to="/my-sessions" replace />} 
+              />
+              <Route 
+                path="/register" 
+                element={!isAuth ? <Register /> : <Navigate to="/my-sessions" replace />} 
+              />
               <Route path="/" element={<Sessions />} />
               
               <Route
@@ -94,6 +108,14 @@ function App() {
               />
               <Route
                 path="/create-session"
+                element={
+                  <ProtectedRoute>
+                    <CreateSession />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/create-session/:id"
                 element={
                   <ProtectedRoute>
                     <CreateSession />

@@ -34,12 +34,9 @@ export default function Sessions() {
       <h2 className="text-3xl font-bold mb-4">Wellness Sessions</h2>
       <div className="grid md:grid-cols-3 gap-4">
         {sessions.map((session) => (
-          <SessionCard 
+          <SessionCard
             key={session._id}
-            title={session.title}
-            description={session.description}
-            author={session.user?.name || 'Anonymous'}
-            status={session.status}
+            session={session} 
           />
         ))}
       </div>

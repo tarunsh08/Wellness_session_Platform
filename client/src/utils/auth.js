@@ -15,7 +15,6 @@ export const getUser = () => {
   }
 };
 
-// Check if user is authenticated
 export const isAuthenticated = () => {
   return !!localStorage.getItem(TOKEN_KEY);
 };

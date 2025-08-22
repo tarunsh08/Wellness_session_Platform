@@ -20,29 +20,33 @@ export default function Login() {
     }
   }, [isAuth, navigate, from]);
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError("");
+const handleLogin = async (e) => {
+  e.preventDefault();
+  setIsLoading(true);
+  setError("");
+  
+  try {
+    const { data } = await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/auth/login`, { 
+      email, 
+      password 
+    });
+    const userData = {
+      id: data._id,
+      name: data.name,
+      email: data.email
+    };
     
-    try {
-      const { data } = await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/auth/login`, { 
-        email, 
-        password 
-      });
-      
-      login(data.token, data.user);
-      // No need to navigate here - the useEffect will handle it when isAuth changes
-    } catch (err) {
-      console.error("Login error:", err);
-      setError(err.response?.data?.message || "Invalid email or password");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    login(data.token, userData);
+  } catch (err) {
+    console.error("Login error:", err);
+    setError(err.response?.data?.message || "Invalid email or password");
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   if (isAuth) {
-    return null; // or a loading spinner
+    return null;
   }
 
   return (

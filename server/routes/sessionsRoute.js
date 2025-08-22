@@ -4,7 +4,8 @@ import {
   getPublicSessions,
   getMySessions,
   getMySessionById,
-  saveDraft,
+  createDraft,
+  updateDraft,
   publishSession,
 } from "../controllers/sessionController.js";
 
@@ -13,7 +14,8 @@ const router = express.Router();
 router.get("/sessions", getPublicSessions);
 router.get("/my-sessions", requireAuth, getMySessions);
 router.get("/my-sessions/:id", requireAuth, getMySessionById);
-router.post("/my-sessions/save-draft", requireAuth, saveDraft);
-router.post("/my-sessions/publish", requireAuth, publishSession);
+router.post("/my-sessions/save-draft", requireAuth, createDraft); // Create a new draft
+router.put("/my-sessions/save-draft/:id", requireAuth, updateDraft); // Update an existing draft
+router.post("/my-sessions/publish/:id", requireAuth, publishSession);
 
 export default router;

@@ -19,46 +19,58 @@ export const getMySessionById = async (req, res) => {
   res.json(session);
 };
 
-// POST /my-sessions/save-draft
-export const saveDraft = async (req, res) => {
-  const { title, description } = req.body;
-
-  let session = await Session.findOne({ user: req.user, title });
-  if (session) {
-    session.description = description;
-    session.status = "draft";
-    await session.save();
-  } else {
-    session = await Session.create({ user: req.user, title, description, status: "draft" });
-  }
-
-  res.json(session);
-};
-
-// POST /my-sessions/publish
-export const publishSession = async (req, res) => {
+// POST /my-sessions/save-draft - Create a new draft
+export const createDraft = async (req, res) => {
   try {
-    console.log('Publish session request received');
-    console.log('Request user:', req.user);
-    console.log('Request body:', req.body);
-    
-    const { title, description } = req.body;
-    
-    if (!req.user?._id) {
-      console.log('User information missing in request');
-      return res.status(400).json({ error: 'User information is missing' });
-    }
-
-    console.log('Creating session with user ID:', req.user._id);
+    const { title, type, content } = req.body;
     const session = await Session.create({
       user: req.user._id,
-      title,
-      description,
-      status: "published",
+      title: title || 'Untitled Session',
+      type: type || '',
+      content: content || '',
+      status: "draft",
     });
-
-    console.log('Session created successfully:', session);
     res.status(201).json(session);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to create draft' });
+  }
+};
+
+// PUT /my-sessions/save-draft/:id - Update an existing draft
+export const updateDraft = async (req, res) => {
+  try {
+    const { title, type, content } = req.body;
+    const session = await Session.findOneAndUpdate(
+      { _id: req.params.id, user: req.user._id },
+      { title, type, content, status: 'draft' },
+      { new: true } // Return the updated document
+    );
+
+    if (!session) {
+      return res.status(404).json({ message: "Draft not found or you don't have permission to edit it." });
+    }
+
+    res.json(session);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update draft' });
+  }
+};
+
+// POST /my-sessions/publish/:id
+export const publishSession = async (req, res) => {
+  try {
+    const { title, type, content } = req.body;
+    const session = await Session.findOneAndUpdate(
+      { _id: req.params.id, user: req.user._id },
+      { title, type, content, status: 'published' },
+      { new: true }
+    );
+
+    if (!session) {
+      return res.status(404).json({ message: "Session not found or you don't have permission to publish it." });
+    }
+
+    res.status(200).json(session);
   } catch (error) {
     console.error('Error in publishSession:', {
       message: error.message,
