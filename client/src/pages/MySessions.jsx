@@ -40,24 +40,29 @@ export default function MySessions() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+      <div className="min-h-screen bg-neutral-900 pt-20 flex items-center justify-center">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="w-12 h-12 border-4 border-neutral-600 border-t-neutral-100 rounded-full animate-spin"></div>
+          <p className="text-neutral-400">Loading your sessions...</p>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="p-6">
-        <div className="bg-red-50 border-l-4 border-red-400 p-4">
-          <div className="flex">
-            <div className="flex-shrink-0">
-              <svg className="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-              </svg>
-            </div>
-            <div className="ml-3">
-              <p className="text-sm text-red-700">{error}</p>
+      <div className="min-h-screen bg-neutral-900 pt-20 pb-10 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="bg-red-900/20 border border-red-700/50 rounded-xl p-6">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <svg className="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <p className="text-red-200">{error}</p>
+              </div>
             </div>
           </div>
         </div>
@@ -66,31 +71,58 @@ export default function MySessions() {
   }
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <div className="flex justify-between items-center mb-8">
-        <h2 className="text-3xl font-bold text-gray-900">My Sessions</h2>
-        <Link
-          to="/create-session"
-          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-        >
-          Create New Session
-        </Link>
-      </div>
+    <div className="min-h-screen bg-neutral-900 pt-20 pb-10 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Header Section */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-12">
+          <div className="mb-6 sm:mb-0">
+            <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-neutral-100 to-neutral-300 bg-clip-text text-transparent mb-2">
+              My Sessions
+            </h1>
+            <p className="text-neutral-400">
+              Manage and track your wellness sessions
+            </p>
+          </div>
+          <Link
+            to="/create-session"
+            className="inline-flex items-center px-6 py-3 bg-neutral-100 text-neutral-900 rounded-lg font-medium hover:bg-neutral-200 transform hover:-translate-y-0.5 transition-all duration-300 shadow-lg hover:shadow-xl"
+          >
+            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Create New Session
+          </Link>
+        </div>
 
-      {sessions && sessions.length > 0 ? (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {sessions
-            .filter(session => session && session._id)
-            .map((session) => (
-              <SessionCard key={session._id} session={session} />
-            ))}
-        </div>
-      ) : (
-        <div className="text-center py-12 bg-gray-50 rounded-lg">
-          <p className="text-gray-500">No sessions found.</p>
-          <p className="text-sm text-gray-400 mt-2">Sessions data: {JSON.stringify(sessions)}</p>
-        </div>
-      )}
+        {/* Sessions Grid */}
+        {sessions && sessions.length > 0 ? (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {sessions
+              .filter(session => session && session._id)
+              .map((session) => (
+                <SessionCard key={session._id} session={session} />
+              ))}
+          </div>
+        ) : (
+          <div className="text-center py-16 bg-neutral-800 border border-neutral-700 rounded-xl">
+            <div className="max-w-md mx-auto">
+              <svg className="w-16 h-16 text-neutral-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+              <h3 className="text-xl font-semibold text-neutral-200 mb-2">No sessions yet</h3>
+              <p className="text-neutral-400 mb-6">
+                Create your first wellness session to get started on your journey.
+              </p>
+              <Link
+                to="/create-session"
+                className="inline-flex items-center px-6 py-2 bg-neutral-100 text-neutral-900 rounded-lg font-medium hover:bg-neutral-200 transition-colors duration-300"
+              >
+                Create Your First Session
+              </Link>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

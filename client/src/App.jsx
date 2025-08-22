@@ -1,12 +1,13 @@
 import { useState, useEffect, createContext, useContext } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { isAuthenticated, getCurrentUser, getToken, getUser } from './utils/auth'; // Import getUser
+import { isAuthenticated, getCurrentUser, getToken, getUser } from './utils/auth'; 
 import Navbar from './components/Navbar';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Sessions from './pages/Sessions';
 import MySessions from './pages/MySessions';
 import CreateSession from './pages/CreateSession';
+import SessionDetails from './pages/SessionDetails';
 
 export const AuthContext = createContext();
 
@@ -85,8 +86,8 @@ function App() {
     <AuthContext.Provider value={{ isAuth, user, login, logout, isLoading }}>
       <div className="min-h-screen bg-gray-50">
         <Navbar />
-        <main className="py-10">
-          <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <main className="">
+          <div className="max-w-screen bg-neutral-900 mx-auto sm:px-2 lg:px-2">
             <Routes>
               <Route 
                 path="/login" 
@@ -105,6 +106,10 @@ function App() {
                     <MySessions />
                   </ProtectedRoute>
                 }
+              />
+              <Route
+              path='/session/:id'
+              element={<SessionDetails />}
               />
               <Route
                 path="/create-session"
