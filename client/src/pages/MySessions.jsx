@@ -11,12 +11,16 @@ export default function MySessions() {
   useEffect(() => {
     const fetchSessions = async () => {
       try {
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem("arvyax_token");
         console.log('Fetching sessions...');
         const response = await axios.get(
           `${import.meta.env.VITE_SERVER_URL}/api/my-sessions`,
           {
-            headers: { Authorization: `Bearer ${token}` },
+            headers: { 
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+            withCredentials: true
           }
         );
         console.log('API Response:', response);
