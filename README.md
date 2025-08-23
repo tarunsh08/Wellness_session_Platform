@@ -16,7 +16,7 @@ A modern, full-stack web application for creating and managing wellness sessions
 
 ## 🚀 Live Demo
 
-**Frontend URL:** [https://arvyax.vercel.app](https://arvyax.vercel.app)  
+**Frontend URL:** [https://arvyax.vercel.app](https://wellness-session-platform-btje.onrender.com)  
 **Backend API:** [https://arvyax-server.onrender.com](https://wellness-session-platform-backend.onrender.com)
 
 > ⚠️ Note: The backend may take a few seconds to spin up on first request due to Render's free tier hibernation.
