@@ -11,13 +11,15 @@ export default function CreateSession() {
   const { id } = useParams();
   const [sessionId, setSessionId] = useState(id);
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("arvyax_token");
   const isCreatingDraft = useRef(false);
 
-  if (!token) {
-    navigate("/login");
-    return;
-  }
+  useEffect(() => {
+    const token = localStorage.getItem("arvyax_token");
+    if (!token) {
+      navigate("/login");
+    }
+  }, [navigate]);
 
   useEffect(() => {
     if (id) {
