@@ -14,6 +14,11 @@ export default function CreateSession() {
   const token = localStorage.getItem("token");
   const isCreatingDraft = useRef(false);
 
+  if (!token) {
+    navigate("/login");
+    return;
+  }
+
   useEffect(() => {
     if (id) {
       const fetchSession = async () => {
@@ -83,12 +88,24 @@ export default function CreateSession() {
       await axios.post(
         `${import.meta.env.VITE_SERVER_URL}/api/my-sessions/publish/${sessionId}`,
         { title, type, content },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { 
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          } 
+        }
       );
       navigate("/my-sessions");
     } catch (error) {
       console.error("Failed to publish session:", error);
-      alert("Failed to publish session.");
+      if (error.response?.status === 401) {
+        alert("Your session has expired. Please log in again.");
+        localStorage.removeItem("arvyax_token");
+        localStorage.removeItem("arvyax_user");
+        navigate("/login");
+      } else {
+        alert(error.response?.data?.message || "Failed to publish session.");
+      }
     } finally {
       setIsPublishing(false);
     }

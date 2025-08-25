@@ -28,7 +28,7 @@ export default function Register() {
         email, 
         password 
       });
-      navigate("/login");
+      navigate("/my-sessions");
     } catch (err) {
       setError(err.response?.data?.message || "Error registering user");
     } finally {
